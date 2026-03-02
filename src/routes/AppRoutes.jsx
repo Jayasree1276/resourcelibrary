@@ -27,6 +27,7 @@ const Layout = () => {
   // Hide Navbar only on auth pages
   const hideNavbar =
     location.pathname === "/" ||
+    location.pathname === "/login" ||
     location.pathname === "/register";
 
   return (
@@ -37,6 +38,7 @@ const Layout = () => {
 
         {/* AUTH ROUTES */}
         <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
         {/* USER ROUTES */}

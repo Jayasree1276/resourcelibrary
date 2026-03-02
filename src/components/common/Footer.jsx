@@ -8,7 +8,7 @@ const Footer = () => {
 
           {/* Column 1 */}
           <div className="footer-column">
-            <h2>EduLibrary</h2>
+            <h2>EduNexus</h2>
             <p>Your digital gateway to structured educational resources.</p>
           </div>
 
@@ -27,7 +27,7 @@ const Footer = () => {
           {/* Column 3 */}
           <div className="footer-column">
             <h3>Contact Us</h3>
-            <p>Email: support@edulibrary.com</p>
+            <p>Email: support@edunexus.com</p>
             <p>Phone: +91 98765 43210</p>
             <p>Location: India</p>
           </div>
@@ -45,7 +45,7 @@ const Footer = () => {
         </div>
 
         <div className="footer-bottom">
-          © 2026 EduLibrary. All rights reserved.
+          © 2026 EduNexus. All rights reserved.
         </div>
       </div>
     </footer>

@@ -11,7 +11,7 @@ const AdminLayout = ({ children }) => {
 
       {/* Sidebar */}
       <aside className="admin-sidebar">
-        <h2 className="sidebar-logo">EduLibrary</h2>
+        <h2 className="sidebar-logo">EduNexus</h2>
 
         <nav className="sidebar-nav">
           <Link

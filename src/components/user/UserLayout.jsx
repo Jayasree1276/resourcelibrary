@@ -11,7 +11,7 @@ const UserLayout = ({ children }) => {
 
       {/* Sidebar */}
       <aside className="user-sidebar">
-        <h2 className="user-logo">EduLibrary</h2>
+        <h2 className="user-logo">EduNexus</h2>
 
         <nav className="user-nav">
 

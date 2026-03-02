@@ -7,7 +7,7 @@ const Navbar = () => {
 
   return (
     <nav className="navbar">
-      <h2>EduLibrary</h2>
+      <h2>EduNexus</h2>
 
       <div className="nav-links">
         {userRole === "user" && (

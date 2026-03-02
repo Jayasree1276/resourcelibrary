@@ -23,7 +23,7 @@ const FeedbackList = () => {
         <div className="feedback-header">
           <div>
             <h2>User Feedback</h2>
-            <p>See what users are saying about EduLibrary</p>
+            <p>See what users are saying about EduNexus</p>
           </div>
 
           <input

@@ -24,7 +24,7 @@ const Feedback = () => {
     <UserLayout>
       <div className="feedback-container">
         <h2>Give Your Feedback</h2>
-        <p>Help us improve EduLibrary 🚀</p>
+        <p>Help us improve EduNexus 🚀</p>
 
         <form onSubmit={handleSubmit} className="feedback-form">
 
