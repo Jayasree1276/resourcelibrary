@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UserLayout from "../../components/user/UserLayout";
-import "../../styles/user.css";
+import { buildResourceRatingsMap } from "../../utils/resourceRatings";
 import { getAllResources } from "../../utils/resourceStore";
+import "../../styles/user.css";
 
-const Home = () => {
+const HomeLive = () => {
   const navigate = useNavigate();
-
   const [resources, setResources] = useState([]);
+  const [resourceRatings, setResourceRatings] = useState({});
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -34,7 +35,6 @@ const Home = () => {
     },
   ];
 
-  // 🔷 Fetch resources
   useEffect(() => {
     getAllResources()
       .then((data) => setResources(Array.isArray(data) ? data : []))
@@ -42,31 +42,30 @@ const Home = () => {
         console.error(err);
         setResources([]);
       });
+
+    buildResourceRatingsMap()
+      .then((data) => setResourceRatings(data))
+      .catch((err) => {
+        console.error(err);
+        setResourceRatings({});
+      });
   }, []);
 
-  // 🔷 Banner auto slide
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentSlide((prev) =>
-        prev === banners.length - 1 ? 0 : prev + 1
-      );
+      setCurrentSlide((prev) => (prev === banners.length - 1 ? 0 : prev + 1));
     }, 4000);
     return () => clearInterval(interval);
   }, [banners.length]);
 
-  // 🔷 Filter
   const filteredResources =
     selectedCategory === "All"
       ? resources
-      : resources.filter(
-          (resource) => resource.subject === selectedCategory
-        );
+      : resources.filter((resource) => resource.subject === selectedCategory);
 
   return (
     <UserLayout>
       <section className="resource-dashboard">
-
-        {/* 🔷 Banner */}
         <div
           className="highlight-banner"
           style={{
@@ -82,9 +81,7 @@ const Home = () => {
               {banners.map((_, index) => (
                 <span
                   key={index}
-                  className={`dot ${
-                    currentSlide === index ? "active-dot" : ""
-                  }`}
+                  className={`dot ${currentSlide === index ? "active-dot" : ""}`}
                   onClick={() => setCurrentSlide(index)}
                 />
               ))}
@@ -92,10 +89,8 @@ const Home = () => {
           </div>
         </div>
 
-        {/* 🔷 Heading */}
         <h1 className="resource-heading">Explore Educational Resources</h1>
 
-        {/* 🔷 Categories */}
         <div className="resource-category-row">
           {resourceCategories.map((category) => (
             <button
@@ -110,26 +105,28 @@ const Home = () => {
           ))}
         </div>
 
-        {/* 🔷 Resources Grid */}
         <div className="resource-grid">
           {filteredResources.length === 0 ? (
             <p>No resources found</p>
           ) : (
-            filteredResources
-              .slice(0, 5) // 🔥 LIMIT TO 5 CARDS
-              .map((resource) => (
-                <article key={resource.id} className="resource-tile">
-                  <span className="resource-pill">
-                    {resource.subject}
-                  </span>
+            filteredResources.slice(0, 5).map((resource) => {
+              const ratingSummary = resourceRatings[resource.id];
 
+              return (
+                <article key={resource.id} className="resource-tile">
+                  <span className="resource-pill">{resource.subject}</span>
                   <h3>{resource.title}</h3>
 
                   <div className="resource-meta-row">
-                    <span>📄 {resource.type}</span>
+                    <span>{resource.type}</span>
                   </div>
 
-                  {/* 🔥 FIXED BUTTON */}
+                  <p>
+                    {ratingSummary
+                      ? `Rating: ${ratingSummary.average.toFixed(1)}/5 (${ratingSummary.count} reviews)`
+                      : "Rating: No reviews yet"}
+                  </p>
+
                   <button
                     className="primary-btn"
                     onClick={() => navigate(`/resource/${resource.id}`)}
@@ -137,23 +134,19 @@ const Home = () => {
                     View Details
                   </button>
                 </article>
-              ))
+              );
+            })
           )}
         </div>
 
-        {/* 🔷 View All Button */}
         <div style={{ textAlign: "center", marginTop: "20px" }}>
-          <button
-            className="primary-btn"
-            onClick={() => navigate("/search")}
-          >
+          <button className="primary-btn" onClick={() => navigate("/search")}>
             View All Resources
           </button>
         </div>
-
       </section>
     </UserLayout>
   );
 };
 
-export default Home;
+export default HomeLive;

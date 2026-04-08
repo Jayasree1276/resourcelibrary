@@ -1,20 +1,7 @@
 import { createContext, useContext, useState } from "react";
 
 const AuthContext = createContext(null);
-
-// helper to read/write user list from localStorage
-const getStoredUsers = () => {
-  try {
-    const raw = localStorage.getItem("users");
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-};
-
-const setStoredUsers = (users) => {
-  localStorage.setItem("users", JSON.stringify(users));
-};
+const AUTH_API_BASE_URL = "http://localhost:8080/api/auth";
 
 const normalizeEmail = (email = "") => email.trim().toLowerCase();
 const normalizeRole = (role = "user") => role.trim().toLowerCase();
@@ -25,41 +12,56 @@ export const AuthProvider = ({ children }) => {
     return stored ? JSON.parse(stored) : null;
   });
 
-  const login = ({ email, password, role }) => {
-    const users = getStoredUsers();
+  const request = async (path, payload) => {
+    const response = await fetch(`${AUTH_API_BASE_URL}${path}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const message = await response.text();
+      throw new Error(message || "Authentication request failed.");
+    }
+
+    return response.json();
+  };
+
+  const login = async ({ email, password, role }) => {
     const normalizedEmail = normalizeEmail(email);
     const selectedRole = normalizeRole(role);
-    const userByEmail = users.find((u) => normalizeEmail(u.email) === normalizedEmail);
-    if (!userByEmail) {
-      throw new Error("Account does not exist. Please register first.");
-    }
-    const storedRole = normalizeRole(userByEmail.role || "user");
-    if (userByEmail.password !== password || storedRole !== selectedRole) {
-      throw new Error("Invalid email/password or role combination.");
-    }
-    const normalizedUser = { ...userByEmail, email: normalizedEmail, role: storedRole };
+    const user = await request("/login", {
+      email: normalizedEmail,
+      password,
+      role: selectedRole,
+    });
+    const normalizedUser = { ...user, email: normalizedEmail, role: normalizeRole(user.role || selectedRole) };
     localStorage.setItem("currentUser", JSON.stringify(normalizedUser));
     setCurrentUser(normalizedUser);
     return normalizedUser;
   };
 
-  const register = ({ name, email, password, role }) => {
-    const users = getStoredUsers();
+  const register = async ({ name, email, password, role }) => {
     const normalizedEmail = normalizeEmail(email);
     const normalizedRole = normalizeRole(role);
-    const exists = users.some((u) => normalizeEmail(u.email) === normalizedEmail);
-    if (exists) {
-      throw new Error("Account with this email already exists");
-    }
-    const newUser = {
+    return request("/register", {
       name: name.trim(),
       email: normalizedEmail,
       password,
       role: normalizedRole,
-    };
-    users.push(newUser);
-    setStoredUsers(users);
-    return newUser;
+    });
+  };
+
+  const updateProfile = (updates) => {
+    if (!currentUser) {
+      throw new Error("No active user session.");
+    }
+    const mergedUser = { ...currentUser, ...updates };
+    localStorage.setItem("currentUser", JSON.stringify(mergedUser));
+    setCurrentUser(mergedUser);
+    return mergedUser;
   };
 
   const logout = () => {
@@ -69,7 +71,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ currentUser, login, register, logout }}
+      value={{ currentUser, login, register, logout, updateProfile }}
     >
       {children}
     </AuthContext.Provider>

@@ -1,17 +1,30 @@
-import { useMemo, useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import UserLayout from "../../components/user/UserLayout";
-import { resources } from "../../data/resources";
 import "../../styles/user.css";
+import { getResourceById } from "../../utils/resourceStore";
 
 const ResourceDetails = () => {
   const { id } = useParams();
   const [feedback, setFeedback] = useState("");
+  const [resource, setResource] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const resource = useMemo(
-    () => resources.find((item) => item.id === Number(id)),
-    [id]
-  );
+  // 🔷 Fetch from backend
+  useEffect(() => {
+    setIsLoading(true);
+    getResourceById(id)
+      .then((data) => {
+        setResource(data);
+      })
+      .catch((err) => {
+        console.error(err);
+        setResource(null);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [id]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -22,6 +35,18 @@ const ResourceDetails = () => {
     alert("Feedback submitted (Demo)");
     setFeedback("");
   };
+
+  // 🔷 If not found
+  if (isLoading) {
+    return (
+      <UserLayout>
+        <div className="resource-details resource-details-card">
+          <h1 className="page-title">Loading Resource</h1>
+          <p>Please wait while we fetch the resource details.</p>
+        </div>
+      </UserLayout>
+    );
+  }
 
   if (!resource) {
     return (
@@ -43,20 +68,21 @@ const ResourceDetails = () => {
         <h1 className="page-title">{resource.title}</h1>
 
         <div className="resource-info resource-details-card">
-          <span className="resource-pill">{resource.category}</span>
-          <p>{resource.description}</p>
+          {/* 🔷 Subject instead of category */}
+          <span className="resource-pill">{resource.subject}</span>
 
           <div className="resource-details-meta">
-            <p><strong>Size:</strong> {resource.size}</p>
-            <p><strong>Rating:</strong> {resource.rating}</p>
-            <p><strong>Format:</strong> {resource.format}</p>
-            <p><strong>Author:</strong> {resource.author}</p>
-            <p><strong>Last Updated:</strong> {resource.lastUpdated}</p>
+            <p><strong>Type:</strong> {resource.type}</p>
+            <p><strong>Access:</strong> Download from the link below</p>
           </div>
 
-          <button className="primary-btn">Download Resource</button>
+          {/* 🔥 Download Button */}
+          <a href={resource.fileUrl} target="_blank" rel="noreferrer">
+            <button className="primary-btn">Download Resource</button>
+          </a>
         </div>
 
+        {/* 🔷 Feedback Section (unchanged) */}
         <div className="feedback-section resource-details-card">
           <h3>Leave Feedback</h3>
           <form onSubmit={handleSubmit}>

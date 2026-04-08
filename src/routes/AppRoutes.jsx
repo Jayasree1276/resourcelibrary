@@ -9,17 +9,17 @@ import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 
 // User
-import Home from "../pages/user/Home";
-import Search from "../pages/user/Search";
-import ResourceDetails from "../pages/user/ResourceDetails";
+import Home from "../pages/user/HomeLive";
+import Search from "../pages/user/SearchLive";
+import ResourceDetails from "../pages/user/ResourceDetailsLive";
 import Profile from "../pages/user/Profile";
-import Feedback from "../pages/user/Feedback";
+import Feedback from "../pages/user/FeedbackLive";
 
 // Admin
-import AdminDashboard from "../pages/admin/AdminDashboard";
+import AdminDashboard from "../pages/admin/AdminDashboardLive";
 import UploadResource from "../pages/admin/UploadResource";
-import ManageUsers from "../pages/admin/ManageUsers";
-import FeedbackList from "../pages/admin/FeedbackList";
+import ManageUsers from "../pages/admin/ManageUsersLive";
+import FeedbackList from "../pages/admin/FeedbackListLive";
 
 const Layout = () => {
   const location = useLocation();
@@ -99,6 +99,15 @@ const Layout = () => {
 
         <Route
           path="/admin/upload"
+          element={
+            <ProtectedRoute allowedRole="admin">
+              <UploadResource />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/resources/:id/edit"
           element={
             <ProtectedRoute allowedRole="admin">
               <UploadResource />

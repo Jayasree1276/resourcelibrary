@@ -80,7 +80,7 @@ const Register = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validateForm()) {
@@ -95,7 +95,7 @@ const Register = () => {
     }
 
     try {
-      register({
+      await register({
         name: formData.name,
         email: formData.email,
         password: formData.password,

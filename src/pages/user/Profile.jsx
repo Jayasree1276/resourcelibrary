@@ -1,17 +1,38 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import UserLayout from "../../components/user/UserLayout";
+import { useAuth } from "../../context/AuthContext";
 import "../../styles/user.css";
 
 const Profile = () => {
+  const { currentUser, updateProfile } = useAuth();
+  const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    fullName: "Akash Kumar",
-    nickName: "Akash",
+    fullName: "",
+    nickName: "",
     gender: "Male",
-    country: "India",
-    language: "English",
-    timeZone: "GMT+5:30",
-    email: "akash@email.com",
+    country: "",
+    language: "",
+    timeZone: "",
+    email: "",
+    role: "user",
   });
+
+  useEffect(() => {
+    if (!currentUser) {
+      return;
+    }
+
+    setFormData({
+      fullName: currentUser.name || "",
+      nickName: currentUser.nickName || currentUser.name?.split(" ")[0] || "",
+      gender: currentUser.gender || "Male",
+      country: currentUser.country || "",
+      language: currentUser.language || "",
+      timeZone: currentUser.timeZone || "",
+      email: currentUser.email || "",
+      role: currentUser.role || "user",
+    });
+  }, [currentUser]);
 
   const handleChange = (e) => {
     setFormData({
@@ -21,41 +42,51 @@ const Profile = () => {
   };
 
   const handleSave = () => {
-    alert("Profile Updated Successfully 🎉");
+    try {
+      updateProfile({
+        name: formData.fullName.trim(),
+        nickName: formData.nickName.trim(),
+        gender: formData.gender,
+        country: formData.country.trim(),
+        language: formData.language.trim(),
+        timeZone: formData.timeZone.trim(),
+      });
+      alert("Profile Updated Successfully");
+      setIsEditing(false);
+    } catch (error) {
+      alert(error.message || "Unable to update profile");
+    }
   };
+
+  const displayName = formData.fullName || "User";
 
   return (
     <UserLayout>
       <div className="profile-container">
-
-        {/* Welcome Header */}
         <div className="profile-header">
-          <h2>Welcome, {formData.fullName.split(" ")[0]}</h2>
+          <h2>Welcome, {displayName.split(" ")[0]}</h2>
           <p>Manage your profile information</p>
         </div>
 
-        {/* Profile Card */}
         <div className="profile-card">
-
-          {/* Top Section */}
           <div className="profile-top">
-            <div className="profile-avatar">
-              {formData.fullName.charAt(0)}
-            </div>
+            <div className="profile-avatar">{displayName.charAt(0).toUpperCase()}</div>
 
             <div>
-              <h3>{formData.fullName}</h3>
+              <h3>{displayName}</h3>
               <p>{formData.email}</p>
+              <p>Role: {formData.role}</p>
             </div>
 
-            <button className="edit-btn-profile">
-              Edit
+            <button
+              className="edit-btn-profile"
+              onClick={() => setIsEditing((prev) => !prev)}
+            >
+              {isEditing ? "Cancel" : "Edit"}
             </button>
           </div>
 
-          {/* Form Grid */}
           <div className="profile-grid">
-
             <div className="form-group">
               <label>Full Name</label>
               <input
@@ -63,6 +94,7 @@ const Profile = () => {
                 name="fullName"
                 value={formData.fullName}
                 onChange={handleChange}
+                disabled={!isEditing}
               />
             </div>
 
@@ -73,6 +105,7 @@ const Profile = () => {
                 name="nickName"
                 value={formData.nickName}
                 onChange={handleChange}
+                disabled={!isEditing}
               />
             </div>
 
@@ -82,6 +115,7 @@ const Profile = () => {
                 name="gender"
                 value={formData.gender}
                 onChange={handleChange}
+                disabled={!isEditing}
               >
                 <option>Male</option>
                 <option>Female</option>
@@ -96,6 +130,7 @@ const Profile = () => {
                 name="country"
                 value={formData.country}
                 onChange={handleChange}
+                disabled={!isEditing}
               />
             </div>
 
@@ -106,6 +141,7 @@ const Profile = () => {
                 name="language"
                 value={formData.language}
                 onChange={handleChange}
+                disabled={!isEditing}
               />
             </div>
 
@@ -116,17 +152,24 @@ const Profile = () => {
                 name="timeZone"
                 value={formData.timeZone}
                 onChange={handleChange}
+                disabled={!isEditing}
               />
             </div>
 
+            <div className="form-group">
+              <label>Email</label>
+              <input type="text" value={formData.email} readOnly />
+            </div>
           </div>
 
-          <button className="save-profile-btn" onClick={handleSave}>
+          <button
+            className="save-profile-btn"
+            onClick={handleSave}
+            disabled={!isEditing}
+          >
             Save Changes
           </button>
-
         </div>
-
       </div>
     </UserLayout>
   );

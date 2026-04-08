@@ -50,7 +50,7 @@ const Login = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validateForm()) {
@@ -66,7 +66,7 @@ const Login = () => {
 
     // attempt login
     try {
-      const user = login({ email, password, role });
+      const user = await login({ email, password, role });
       // success
       if (user.role === "admin") {
         navigate("/admin/dashboard", { replace: true });

@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UserLayout from "../../components/user/UserLayout";
-import "../../styles/user.css";
+import { buildResourceRatingsMap } from "../../utils/resourceRatings";
 import { getAllResources } from "../../utils/resourceStore";
+import "../../styles/user.css";
 
-const Search = () => {
+const SearchLive = () => {
   const navigate = useNavigate();
   const [resources, setResources] = useState([]);
+  const [resourceRatings, setResourceRatings] = useState({});
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [isLoading, setIsLoading] = useState(true);
@@ -16,13 +18,15 @@ const Search = () => {
     setIsLoading(true);
     setErrorMessage("");
 
-    getAllResources()
-      .then((data) => {
-        setResources(Array.isArray(data) ? data : []);
+    Promise.all([getAllResources(), buildResourceRatingsMap()])
+      .then(([resourceData, ratingData]) => {
+        setResources(Array.isArray(resourceData) ? resourceData : []);
+        setResourceRatings(ratingData);
       })
       .catch((err) => {
         console.error(err);
         setResources([]);
+        setResourceRatings({});
         setErrorMessage("Unable to load resources right now.");
       })
       .finally(() => {
@@ -32,22 +36,14 @@ const Search = () => {
 
   const categories = [
     "All",
-    ...new Set(
-      resources
-        .map((resource) => resource.subject)
-        .filter(Boolean)
-    ),
+    ...new Set(resources.map((resource) => resource.subject).filter(Boolean)),
   ];
 
   const filteredResources = resources.filter((resource) => {
     const matchesCategory =
       selectedCategory === "All" || resource.subject === selectedCategory;
 
-    const searchableText = [
-      resource.title,
-      resource.subject,
-      resource.type,
-    ]
+    const searchableText = [resource.title, resource.subject, resource.type]
       .filter(Boolean)
       .join(" ")
       .toLowerCase();
@@ -117,23 +113,33 @@ const Search = () => {
               No resources matched your search. Try another keyword or category.
             </p>
           ) : (
-            filteredResources.map((resource) => (
-              <article key={resource.id} className="resource-tile">
-                <span className="resource-pill">{resource.subject || "General"}</span>
-                <h3>{resource.title}</h3>
+            filteredResources.map((resource) => {
+              const ratingSummary = resourceRatings[resource.id];
 
-                <div className="resource-meta-row">
-                  <span>{resource.type || "File"}</span>
-                </div>
+              return (
+                <article key={resource.id} className="resource-tile">
+                  <span className="resource-pill">{resource.subject || "General"}</span>
+                  <h3>{resource.title}</h3>
 
-                <button
-                  className="primary-btn"
-                  onClick={() => navigate(`/resource/${resource.id}`)}
-                >
-                  View Details
-                </button>
-              </article>
-            ))
+                  <div className="resource-meta-row">
+                    <span>{resource.type || "File"}</span>
+                  </div>
+
+                  <p>
+                    {ratingSummary
+                      ? `Rating: ${ratingSummary.average.toFixed(1)}/5 (${ratingSummary.count} reviews)`
+                      : "Rating: No reviews yet"}
+                  </p>
+
+                  <button
+                    className="primary-btn"
+                    onClick={() => navigate(`/resource/${resource.id}`)}
+                  >
+                    View Details
+                  </button>
+                </article>
+              );
+            })
           )}
         </div>
       </section>
@@ -141,4 +147,4 @@ const Search = () => {
   );
 };
 
-export default Search;
+export default SearchLive;
