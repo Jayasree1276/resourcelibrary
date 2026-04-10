@@ -74,6 +74,31 @@ const ResourceDetailsLive = () => {
     }
   };
 
+  const handleDownload = async () => {
+    try {
+      const downloadUrl = `http://localhost:8080/api/resources/download/${resource.id}`;
+      
+      const response = await fetch(downloadUrl);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to download file: ${response.status} ${response.statusText}`);
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = resource.title || 'resource';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Download failed:', error);
+      alert(`Failed to download the resource: ${error.message}`);
+    }
+  };
+
   if (isLoading) {
     return (
       <UserLayout>
@@ -117,9 +142,9 @@ const ResourceDetailsLive = () => {
             <p><strong>Total Reviews:</strong> {feedbackItems.length}</p>
           </div>
 
-          <a href={resource.fileUrl} target="_blank" rel="noreferrer">
-            <button className="primary-btn">Download Resource</button>
-          </a>
+          <button className="primary-btn" onClick={handleDownload}>
+            Download Resource
+          </button>
         </div>
 
         <div className="feedback-section resource-details-card">
