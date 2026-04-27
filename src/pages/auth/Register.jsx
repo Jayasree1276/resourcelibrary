@@ -101,8 +101,10 @@ const Register = () => {
         password: formData.password,
         role: formData.role,
       });
-      alert("Account created successfully! 🎉 Please sign in with your credentials.");
-      navigate("/login");
+      alert(
+        "Account created successfully. Please verify your email before signing in."
+      );
+      navigate(`/verify-email?email=${encodeURIComponent(formData.email)}`);
     } catch (err) {
       setErrors({ ...errors, general: err.message });
     }
@@ -271,6 +273,15 @@ const Register = () => {
                 Already have an account?{" "}
                 <Link to="/login" className="link">
                   Sign In
+                </Link>
+              </p>
+              <p className="secondary-footer-text">
+                Need to verify your email?{" "}
+                <Link
+                  to={`/verify-email?email=${encodeURIComponent(formData.email || "")}`}
+                  className="link"
+                >
+                  Open verification page
                 </Link>
               </p>
             </div>

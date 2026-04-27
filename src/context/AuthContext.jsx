@@ -12,13 +12,13 @@ export const AuthProvider = ({ children }) => {
     return stored ? JSON.parse(stored) : null;
   });
 
-  const request = async (path, payload) => {
+  const request = async (path, payload, method = "POST") => {
     const response = await fetch(`${AUTH_API_BASE_URL}${path}`, {
-      method: "POST",
+      method,
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(payload),
+      body: payload ? JSON.stringify(payload) : undefined,
     });
 
     if (!response.ok) {
@@ -54,6 +54,22 @@ export const AuthProvider = ({ children }) => {
     });
   };
 
+  const forgotPassword = async ({ email }) => {
+    return request("/forgot-password", { email: normalizeEmail(email) });
+  };
+
+  const resetPassword = async ({ token, password }) => {
+    return request("/reset-password", { token, password });
+  };
+
+  const verifyEmail = async ({ token }) => {
+    return request("/verify-email", { token });
+  };
+
+  const resendVerification = async ({ email }) => {
+    return request("/resend-verification", { email: normalizeEmail(email) });
+  };
+
   const updateProfile = (updates) => {
     if (!currentUser) {
       throw new Error("No active user session.");
@@ -71,7 +87,17 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ currentUser, login, register, logout, updateProfile }}
+      value={{
+        currentUser,
+        login,
+        register,
+        forgotPassword,
+        resetPassword,
+        verifyEmail,
+        resendVerification,
+        logout,
+        updateProfile,
+      }}
     >
       {children}
     </AuthContext.Provider>

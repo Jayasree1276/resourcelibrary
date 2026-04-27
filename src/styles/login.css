@@ -206,6 +206,25 @@
   min-height: 16px;
 }
 
+.auth-message-success {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #065f46;
+  background: #d1fae5;
+  border: 1px solid #a7f3d0;
+}
+
+.auth-message-error {
+  margin-bottom: 12px;
+  min-height: auto;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+}
+
 /* ============ PASSWORD INPUT GROUP ============ */
 .password-input-group {
   position: relative;
@@ -293,6 +312,11 @@
   transform: translateY(0);
 }
 
+.submit-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
 /* ============ FORM FOOTER ============ */
 .form-footer {
   text-align: center;
@@ -303,6 +327,16 @@
 
 .form-footer p {
   margin: 0;
+}
+
+.secondary-footer-text {
+  margin-top: 6px !important;
+  font-size: 13px;
+}
+
+.inline-auth-action {
+  margin-top: 8px;
+  text-align: right;
 }
 
 .link {

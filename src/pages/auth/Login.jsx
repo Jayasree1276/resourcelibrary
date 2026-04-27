@@ -165,6 +165,11 @@ const Login = () => {
                   </button>
                 </div>
                 {errors.password && <span className="error-text">{errors.password}</span>}
+                <div className="inline-auth-action">
+                  <Link to="/forgot-password" className="link">
+                    Forgot password?
+                  </Link>
+                </div>
               </div>
 
               {/* CAPTCHA */}
@@ -207,6 +212,12 @@ const Login = () => {
                 Don't have an account?{" "}
                 <Link to="/register" className="link">
                   Sign Up
+                </Link>
+              </p>
+              <p className="secondary-footer-text">
+                Didn't get verification email?{" "}
+                <Link to="/verify-email" className="link">
+                  Verify now
                 </Link>
               </p>
             </div>
