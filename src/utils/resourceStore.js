@@ -1,4 +1,5 @@
-const API_BASE_URL = "http://localhost:8080/api/resources";
+const API_BASE_URL =
+  "https://resourcelibrarybackend-production.up.railway.app/api/resources";
 
 const normalizeText = (value = "") => value.trim().toLowerCase();
 

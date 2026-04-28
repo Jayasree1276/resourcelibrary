@@ -76,7 +76,7 @@ const ResourceDetailsLive = () => {
 
   const handleDownload = async () => {
     try {
-      const downloadUrl = `http://localhost:8080/api/resources/download/${resource.id}`;
+      const downloadUrl = `https://resourcelibrarybackend-production.up.railway.app/api/resources/download/${resource.id}`;
       
       const response = await fetch(downloadUrl);
       

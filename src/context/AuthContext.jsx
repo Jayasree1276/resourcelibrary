@@ -1,7 +1,8 @@
 import { createContext, useContext, useState } from "react";
 
 const AuthContext = createContext(null);
-const AUTH_API_BASE_URL = "http://localhost:8080/api/auth";
+const AUTH_API_BASE_URL =
+  "https://resourcelibrarybackend-production.up.railway.app/api/auth";
 
 const normalizeEmail = (email = "") => email.trim().toLowerCase();
 const normalizeRole = (role = "user") => role.trim().toLowerCase();
