@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "../../styles/login.css";
 
 const ForgotPassword = () => {
   const { forgotPassword } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("");
@@ -31,8 +32,11 @@ const ForgotPassword = () => {
       const response = await forgotPassword({ email });
       setStatus(
         response?.message ||
-          "If this email exists, a password reset link has been sent."
+          "Email verified. Continue to set a new password."
       );
+      setTimeout(() => {
+        navigate(`/reset-password?email=${encodeURIComponent(email.trim())}`);
+      }, 800);
     } catch (err) {
       setErrors({ general: err.message || "Unable to send reset email." });
     } finally {
@@ -55,7 +59,7 @@ const ForgotPassword = () => {
           <div className="auth-form">
             <div className="form-header">
               <h1>Forgot Password</h1>
-              <p>We will send password reset instructions to your email</p>
+              <p>We will first verify your registered email</p>
             </div>
 
             {errors.general && (
@@ -82,7 +86,7 @@ const ForgotPassword = () => {
               </div>
 
               <button type="submit" className="submit-btn" disabled={submitting}>
-                {submitting ? "Sending..." : "Send Reset Link"}
+                {submitting ? "Checking..." : "Continue"}
               </button>
             </form>
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "../../styles/login.css";
@@ -8,7 +8,11 @@ const ResetPassword = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const [token, setToken] = useState(searchParams.get("token") || "");
+  const initialEmail = useMemo(
+    () => (searchParams.get("email") || "").trim(),
+    [searchParams]
+  );
+  const [email, setEmail] = useState(initialEmail);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({});
@@ -18,8 +22,10 @@ const ResetPassword = () => {
   const validateForm = () => {
     const nextErrors = {};
 
-    if (!token.trim()) {
-      nextErrors.token = "Reset token is required";
+    if (!email.trim()) {
+      nextErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      nextErrors.email = "Please enter a valid email";
     }
     if (!password.trim()) {
       nextErrors.password = "Password is required";
@@ -43,7 +49,10 @@ const ResetPassword = () => {
 
     setSubmitting(true);
     try {
-      const response = await resetPassword({ token, password });
+      const response = await resetPassword({
+        email,
+        newPassword: password,
+      });
       setStatus(response?.message || "Password reset successful.");
       setTimeout(() => navigate("/login"), 1200);
     } catch (err) {
@@ -68,7 +77,7 @@ const ResetPassword = () => {
           <div className="auth-form">
             <div className="form-header">
               <h1>Reset Password</h1>
-              <p>Enter your reset token and choose a new password</p>
+              <p>Confirm your email and choose a new password</p>
             </div>
 
             {errors.general && (
@@ -78,15 +87,15 @@ const ResetPassword = () => {
 
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label>Reset Token</label>
+                <label>Email Address</label>
                 <input
-                  type="text"
-                  value={token}
-                  placeholder="Paste token from email"
-                  onChange={(e) => setToken(e.target.value)}
-                  className={`form-input ${errors.token ? "input-error" : ""}`}
+                  type="email"
+                  value={email}
+                  placeholder="Enter your registered email"
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={`form-input ${errors.email ? "input-error" : ""}`}
                 />
-                {errors.token && <span className="error-text">{errors.token}</span>}
+                {errors.email && <span className="error-text">{errors.email}</span>}
               </div>
 
               <div className="form-group">

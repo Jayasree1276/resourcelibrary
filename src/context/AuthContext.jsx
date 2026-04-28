@@ -59,8 +59,11 @@ export const AuthProvider = ({ children }) => {
     return request("/forgot-password", { email: normalizeEmail(email) });
   };
 
-  const resetPassword = async ({ token, password }) => {
-    return request("/reset-password", { token, password });
+  const resetPassword = async ({ email, newPassword }) => {
+    return request("/reset-password", {
+      email: normalizeEmail(email),
+      newPassword,
+    });
   };
 
   const verifyEmail = async ({ token }) => {
