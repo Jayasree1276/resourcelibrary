@@ -214,12 +214,6 @@ const Login = () => {
                   Sign Up
                 </Link>
               </p>
-              <p className="secondary-footer-text">
-                Didn't get verification email?{" "}
-                <Link to="/verify-email" className="link">
-                  Verify now
-                </Link>
-              </p>
             </div>
 
 

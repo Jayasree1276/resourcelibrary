@@ -275,15 +275,6 @@ const Register = () => {
                   Sign In
                 </Link>
               </p>
-              <p className="secondary-footer-text">
-                Need to verify your email?{" "}
-                <Link
-                  to={`/verify-email?email=${encodeURIComponent(formData.email || "")}`}
-                  className="link"
-                >
-                  Open verification page
-                </Link>
-              </p>
             </div>
 
 
